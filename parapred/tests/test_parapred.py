@@ -116,3 +116,32 @@ class ParapredTest(unittest.TestCase):
                                2.2500, 5.9400, 0.3200, 0.4200]]), encoded_representation
             )
         )
+
+    def test_batch_prediction(self):
+        batch = ["CAKYPYYYGTSHWYFDVW", "CSQSYNYPYTF"]
+        encoding, lengths = encode_batch(batch, self.max_length)
+        m = generate_mask(encoding, lengths)
+
+        with torch.no_grad():
+            pr = self.model(encoding, m, lengths)
+
+        print(pr.view(len(batch),-1).shape)
+
+        v1 = pr.view(len(batch), -1)[0][:lengths[0].item()]
+        v2 = pr.view(len(batch), -1)[1][:lengths[1].item()]
+
+        self.assertTrue(
+            torch.allclose(
+                torch.Tensor([0.00617, 0.01301, 0.15066, 0.36306, 0.17887, 0.19109, 0.87802,
+                              0.8394, 0.62666, 0.63762, 0.67999, 0.65898, 0.41061, 0.75221, 0.17845,
+                              0.28998, 0.12861, 0.22138]), v1,
+                rtol=1e-2
+            )
+        )
+        self.assertTrue(
+            torch.allclose(
+                torch.Tensor([0.00422, 0.04747, 0.35151, 0.41757, 0.53621, 0.83283, 0.78089, 0.93526,
+                              0.71154, 0.81395, 0.17341]), v2,
+                rtol=1e-2
+            )
+        )

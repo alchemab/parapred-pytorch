@@ -39,7 +39,7 @@ We advise that you allocate at least 4GB of RAM to the Docker daemon.
 For Mac, this can be set by `Docker > Preferences > Resources > Advanced`. 
 
 ```bash
-docker build -t parapred_pytorch:latest 
+docker build -t parapred_pytorch:latest .
 ```
 
 ## Running instructions
@@ -52,10 +52,30 @@ After install,
 python cli.py predict <CDR_SEQUENCE> [OPTIONS]
 ```
 
-e.g.
+e.g. to predict on the CDRH3 sequence of ranibizumab and save the results to `output_ranibizumab.json`,
 ```bash
 python cli.py predict CAKYPYYYGTSHWYFDVW -v -o output_ranibizumab.json
 ```
+
+### Output format
+The output of Parapred is a JSON file:
+```json
+{
+  "CSQSYNYPYTF":[
+    ["C",0.00422],["S",0.04747],["Q",0.35151],["S",0.41757],["Y",0.53621],["N",0.83283],["Y",0.78089],
+    ["P",0.93526],["Y",0.71154],["T",0.81395],["F",0.17341]
+  ]
+}
+```
+
+From the command line, we advise using tools such as [jq](https://stedolan.github.io/jq/), and here's a link
+to a [good blog post on how to use it](https://clarewest.github.io/blog/post/handling-json-data-with-jq/). For
+example, to get the residues whose Parapred probabilities are over 0.5,
+
+```bash
+jq -c '.[] | .[] | select(.[1] >= 0.5)' output.json
+``` 
+ 
 
 ### Docker
 The Docker equivalent is
@@ -67,7 +87,9 @@ folder of the Docker container
 * The second `-v` flag acts as the `verbose` flag for the `predict` command of the CLI tool
 * The `-o` flag sets the location to save the output of the prediction JSON. This is _in context_ of the Docker
 container. Thus, even if we write `/data/` here in the Terminal, it's the `/data/` folder of the Docker container,
-which is actually `/tmp` of your machine (if you've mounted as we suggest above) 
+which is actually `/tmp` of your machine (if you've mounted as we suggest above)
+
+### Output format  
 
 ### As part of a larger Python codebase
 ```python

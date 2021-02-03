@@ -1,14 +1,18 @@
 import unittest
 import torch
+import os
 from parapred.model import Parapred
 from parapred.preprocessing import encode_parapred, encode_batch
 from parapred.cnn import generate_mask
 
 
+FPATH = os.path.dirname(os.path.abspath(__file__))
+WEIGHTS_PATH = os.path.join(FPATH, "../weights/parapred_pytorch.h5")
+
 class ParapredTest(unittest.TestCase):
     def setUp(self):
         self.model = Parapred()
-        self.model.load_state_dict(torch.load("../weights/parapred_pytorch.h5"))
+        self.model.load_state_dict(torch.load(WEIGHTS_PATH))
         _ = self.model.eval()
 
         self.sequence = "CAKYPYYYGTSHWYFDVW"
@@ -124,8 +128,6 @@ class ParapredTest(unittest.TestCase):
 
         with torch.no_grad():
             pr = self.model(encoding, m, lengths)
-
-        print(pr.view(len(batch),-1).shape)
 
         v1 = pr.view(len(batch), -1)[0][:lengths[0].item()]
         v2 = pr.view(len(batch), -1)[1][:lengths[1].item()]

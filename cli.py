@@ -13,14 +13,13 @@ from parapred.preprocessing import encode_batch
 
 MAX_PARAPRED_LEN = 40
 
-
 LOGGER = logging.getLogger("Parapred-Logger")
 LOGGER.setLevel(logging.INFO)
 
 WEIGHTS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "parapred/weights/parapred_pytorch.h5")
 
 
-@click.command(help = "Predict paratope probability for a given CDR sequence.")
+@click.command(help = "Predict paratope probability for a single CDR sequence.")
 @click.argument("cdr")
 @click.option("--weight", "-w", help = "Specify path for weights.")
 @click.option("--output", "-o", help = "Specify output JSON filename for prediction.", default = "output.json")
@@ -98,7 +97,6 @@ def cli():
     pass
 
 cli.add_command(predict)
-
 
 if __name__ == "__main__":
     cli()

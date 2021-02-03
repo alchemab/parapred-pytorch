@@ -98,3 +98,15 @@ class Parapred(nn.Module):
         o = self.sigmoid(self.fc(o))
 
         return o
+
+
+def clean_output(output_tensor: torch.Tensor, sequence_length: int):
+    """
+    Clean the output tensor of probabilities to remove the predictions for padded positions
+
+    :param output_tensor: output from the Parapred model; shape: (max_length x 1)
+    :param sequence_length: length of sequence
+
+    :return:
+    """
+    return output_tensor[:sequence_length].view(-1)

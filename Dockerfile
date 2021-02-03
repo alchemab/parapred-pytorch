@@ -5,7 +5,11 @@ RUN apt-get update -y && apt-get install -y \
     python3-pip
 
 # Copy and install
-COPY . /data
-RUN cd /data && pip install -r requirements.txt && make install
+COPY requirements.txt /app/requirements.txt
+WORKDIR /app/
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-ENTRYPOINT ["python", "/data/cli.py"]
+COPY . /app
+RUN cd /app && make install && mkdir /data/
+
+ENTRYPOINT ["python", "/app/cli.py"]

@@ -3,10 +3,11 @@ import torch
 import os
 import json
 import logging
+import sys
 from pprint import pprint
 from typing import Optional
 
-from parapred.model import Parapred
+from parapred.model import Parapred, clean_output
 from parapred.cnn import generate_mask
 from parapred.preprocessing import encode_batch
 
@@ -32,6 +33,14 @@ def predict(cdr: str,
             no_output: bool = False,
             verbose: bool = False,
             sigmoid: bool = False):
+
+    if len(cdr) > MAX_PARAPRED_LEN:
+        LOGGER.error(f"Length of the CDR sequence ({len(cdr)}) is too long. Unsupported.")
+        sys.exit(1)
+    elif len(cdr) < 4:
+        LOGGER.error(f"The original Parapred method requires at least 2 amino acids flanking the CDR.")
+        sys.exit(1)
+
     # Encode input sequences
     if verbose:
         LOGGER.info(f"Encoding CDR sequence {cdr}")
@@ -67,10 +76,10 @@ def predict(cdr: str,
         probabilities = p(sequences, m, lengths)
 
     # Linearise probabilities for viewing
-    probabilities = probabilities.view(sequences.size()[0], -1)[0].tolist()
-
     out = {}
-    i_prob = [round(_, 5) for _ in probabilities]
+    clean = clean_output(probabilities, lengths[0]).tolist()
+
+    i_prob = [round(_, 5) for i, _ in enumerate(clean)]
     seq_to_prob = list(zip(cdr, i_prob))
     out[cdr] = seq_to_prob
 

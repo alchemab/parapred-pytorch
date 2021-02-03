@@ -22,14 +22,14 @@ We provide three ways to set up Parapred.
 
 ### Conda environment
 ```bash
-conda env create -f environment.yml
-make install
+$ conda env create -f environment.yml
+$ make install
 ```
 
 ### Pip/requirements.txt
 ```bash
-pip install -r requirements.txt
-make install
+$ pip install -r requirements.txt
+$ make install
 ```
 
 ### Dockerfile
@@ -39,7 +39,7 @@ We advise that you allocate at least 4GB of RAM to the Docker daemon.
 For Mac, this can be set by `Docker > Preferences > Resources > Advanced`. 
 
 ```bash
-docker build -t parapred_pytorch:latest .
+$ docker build -t parapred_pytorch:latest .
 ```
 
 ## Running instructions
@@ -49,12 +49,12 @@ To run Parapred, this depends on whether you used Conda/Pip or Docker.
 ### Conda/Pip
 After install,
 ```bash
-python cli.py predict <CDR_SEQUENCE> [OPTIONS]
+$ python cli.py predict <CDR_SEQUENCE> [OPTIONS]
 ```
 
 e.g. to predict on the CDRH3 sequence of ranibizumab and save the results to `output_ranibizumab.json`,
 ```bash
-python cli.py predict CAKYPYYYGTSHWYFDVW -v -o output_ranibizumab.json
+$ python cli.py predict CAKYPYYYGTSHWYFDVW -v -o output_ranibizumab.json
 ```
 
 ### Output format
@@ -62,8 +62,9 @@ The output of Parapred is a JSON file:
 ```json
 {
   "CSQSYNYPYTF":[
-    ["C",0.00422],["S",0.04747],["Q",0.35151],["S",0.41757],["Y",0.53621],["N",0.83283],["Y",0.78089],
-    ["P",0.93526],["Y",0.71154],["T",0.81395],["F",0.17341]
+    ["C",0.00422],["S",0.04747],["Q",0.35151],["S",0.41757],
+    ["Y",0.53621],["N",0.83283],["Y",0.78089],["P",0.93526],
+    ["Y",0.71154],["T",0.81395],["F",0.17341]
   ]
 }
 ```
@@ -73,7 +74,14 @@ to a [good blog post on how to use it](https://clarewest.github.io/blog/post/han
 example, to get the residues whose Parapred probabilities are over 0.5,
 
 ```bash
-jq -c '.[] | .[] | select(.[1] >= 0.5)' output.json
+$ jq -c '.[] | .[] | select(.[1] >= 0.5)' output.json
+# output using CSQSYNYPYTF
+# ["Y",0.53621]
+# ["N",0.83283]
+# ["Y",0.78089]
+# ["P",0.93526]
+# ["Y",0.71154]
+# ["T",0.81395]
 ``` 
  
 
@@ -161,7 +169,7 @@ Our implementation provides users the ability to test Parapred using `sigmoid` a
 LSTM layer:
 
 ```bash
-python cli.py predict CAKYPYYYGTSHWYFDVW -s -v
+$ python cli.py predict CAKYPYYYGTSHWYFDVW -s -v
 ``` 
 
 The original Parapred method was based on Tensorflow 1.2/Keras, which had used `hard_sigmoid`

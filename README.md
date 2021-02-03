@@ -50,3 +50,28 @@ The Docker equivalent is
 ```bash
 docker run -v /tmp:/ --rm parapred_pytorch predict CAKYPYYYGTSHWYFDVW -v -o output_ranibizumab.json
 ```
+
+## Additional notes
+
+### Training
+Parapred-pytorch is written in a very minimalist way to allow researchers to predict paratopes (CDR sequences
+only) immediately. Currently, we only provide the pre-trained weights from the original Parapred publication
+though there may be plans to include recipes for training in future releases.
+
+The original Parapred method was based on the Chothia-defined CDRs based on the Chothia numbering. We provide
+here a table mapping the CDR Chothia boundaries in the corresponding IMGT numbers. Note that these are not
+identical to the IMGT boundaries of the CDRs.
+
+| CDR | Chothia numbers | IMGT numbers | 
+| --- | --------------- | ------------ |
+| H1  |  H26-H34        | H27-H37 |
+| H2  |  H52-H56        | H57-H64 |
+| H3  |  H95-H102       | H107-H117 |
+| L1  |  L24-L34        | L24-40 |
+| L2  |  L50-L56        | L56-L69 |
+| L3  |  L89-L97 | L105-L117|
+
+### LSTM activations
+Our implementation provides users the ability to test Parapred using `sigmoid` activations for the
+LSTM layer. The original Parapred method was based on Tensorflow 1.2/Keras, which had used `hard_sigmoid`
+activations in the LSTM step. We retain this hard sigmoid as the default. 

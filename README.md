@@ -8,8 +8,13 @@
 
 
 This repo is a PyTorch implementation of the original Parapred code from [Liberis
-et al., 2018.](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995). We would also like to point
-users to the original [Github repo for Parapred](https://github.com/eliberis/parapred), written in Keras.
+et al., 2018](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995). We would also like to point
+users to the [original Github repo for Parapred](https://github.com/eliberis/parapred), based on [Keras](https://keras.io/).
+
+## Table of Contents
+* [Setup](#setup)
+* [Running instructions](#running-instructions)
+* [Additional notes](#additional-notes)
 
 ## Setup
 
@@ -37,7 +42,7 @@ For Mac, this can be set by `Docker > Preferences > Resources > Advanced`.
 docker build -t parapred_pytorch:latest 
 ```
 
-## Running - CLI tool
+## Running instructions
 
 To run Parapred, this depends on whether you used Conda/Pip or Docker.
 
@@ -64,7 +69,7 @@ folder of the Docker container
 container. Thus, even if we write `/data/` here in the Terminal, it's the `/data/` folder of the Docker container,
 which is actually `/tmp` of your machine (if you've mounted as we suggest above) 
 
-## Running - as part of a larger Python codebase
+### As part of a larger Python codebase
 ```python
 import torch
 from parapred.model import Parapred, clean_output

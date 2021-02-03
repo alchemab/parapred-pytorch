@@ -116,14 +116,14 @@ the training and testing that led up to this work. In short,
 
 ![workflow.png](workflow.png)
 
-### Training
-Parapred-pytorch is written in a very minimalist way to allow researchers to predict paratopes (CDR sequences
-only) immediately. Currently, we only provide the pre-trained weights from the original Parapred publication
-though there may be plans to include recipes for training in future releases.
+### Aims of this repo
+Parapred-pytorch (this repo) is written to help researchers rapidly predict paratope probabilities of CDR sequences. It
+is a more minimalist implementation that focusses more on providing inference capabilities. We provide here the
+pre-trained weights from the original Parapred Github repo, which were translated to fit the PyTorch framework.
 
 The original Parapred method was based on the Chothia-defined CDRs based on the Chothia numbering. We provide
-here a table mapping the CDR Chothia boundaries in the corresponding IMGT numbers. Note that these are not
-identical to the IMGT boundaries of the CDRs.
+a table mapping the CDR Chothia boundaries in the corresponding IMGT numbers. Note that these are **not**
+identical to the IMGT boundaries of the CDRs; e.g. CDRH3 according to the IMGT definition is IMGT H105-H117.
 
 | CDR | Chothia numbers | IMGT numbers | 
 | --- | --------------- | ------------ |
@@ -136,5 +136,12 @@ identical to the IMGT boundaries of the CDRs.
 
 ### LSTM activations
 Our implementation provides users the ability to test Parapred using `sigmoid` activations for the
-LSTM layer. The original Parapred method was based on Tensorflow 1.2/Keras, which had used `hard_sigmoid`
-activations in the LSTM step. We retain this hard sigmoid as the default. 
+LSTM layer:
+
+```bash
+python cli.py predict CAKYPYYYGTSHWYFDVW -s -v
+``` 
+
+The original Parapred method was based on Tensorflow 1.2/Keras, which had used `hard_sigmoid`
+activations in the LSTM step. We retain this hard sigmoid as the default, though we would like to highlight
+that the hard sigmoid is an approximation of the regular `sigmoid` function (allows faster computation).  

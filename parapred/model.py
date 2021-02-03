@@ -60,7 +60,6 @@ class Parapred(nn.Module):
                 hidden_size=n_hidden_cells,
                 batch_first=True,
                 bidirectional=True,
-                dropout=0.2
             )
         elif lstm_activation == 'hard_sigmoid':
             self.lstm = LSTMHardSigmoid(
@@ -68,7 +67,6 @@ class Parapred(nn.Module):
                 hidden_size=n_hidden_cells,
                 batch_first=True,
                 bidirectional=True,
-                dropout=0.2
             )
 
         # need to multiply by 2 as it's a bidirectional LSTM.

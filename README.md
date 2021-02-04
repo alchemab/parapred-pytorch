@@ -8,8 +8,12 @@
 
 
 This repo is a PyTorch implementation of the original Parapred code from [Liberis
-et al., 2018](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995). We would also like to point
-users to the [original Github repo for Parapred](https://github.com/eliberis/parapred), based on [Keras](https://keras.io/).
+et al., 2018](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995). 
+
+We would also like to point users to the [original Github repo for Parapred](https://github.com/eliberis/parapred),
+based on [Keras](https://keras.io/).
+
+![Banner](banner.png)
 
 ## Table of Contents
 * [Setup](#setup)
@@ -44,6 +48,9 @@ $ docker build -t parapred_pytorch:latest .
 
 ## Running instructions
 
+Parapred takes as input any Chothia-defined CDR sequence + 2 residues on either side. We provide a [table](#numbering)
+to help translate between IMGT numbers and Chothia numbers.
+
 To run Parapred, this depends on whether you used Conda/Pip or Docker.
 
 ### Conda/Pip
@@ -52,43 +59,47 @@ After install,
 $ python cli.py predict <CDR_SEQUENCE> [OPTIONS]
 ```
 
-e.g. to predict on the CDRH3 sequence of ranibizumab and save the results to `output_ranibizumab.json`,
+e.g. to predict on the CDRH3 sequence (+2 residues on either side) of
+adalimumab (AKVSYLSTASSLDYWG) and save the results to `output_adalimumab.json`,
 ```bash
-$ python cli.py predict CAKYPYYYGTSHWYFDVW -v -o output_ranibizumab.json
+$ python cli.py predict AKVSYLSTASSLDYWG -v -o output_adalimumab.json
 ```
 
 ### Output format
 The output of Parapred is a JSON file:
 ```json
 {
-  "CSQSYNYPYTF":[
-    ["C",0.00422],["S",0.04747],["Q",0.35151],["S",0.41757],
-    ["Y",0.53621],["N",0.83283],["Y",0.78089],["P",0.93526],
-    ["Y",0.71154],["T",0.81395],["F",0.17341]
+  "AKVSYLSTASSLDYWG":[
+    ["A",0.01034],["K",0.23327],["V",0.70882],["S",0.6835],
+    ["Y",0.93412],["L",0.98127],["S",0.95116],["T",0.89977],
+    ["A",0.77837],["S",0.83716],["S",0.29981],["L",0.03982],
+    ["D",0.14933],["Y",0.10781],["W",0.00362],["G",0.00776]
   ]
 }
 ```
 
 From the command line, we advise using tools such as [jq](https://stedolan.github.io/jq/), and here's a link
 to a [good blog post on how to use it](https://clarewest.github.io/blog/post/handling-json-data-with-jq/). For
-example, to get the residues whose Parapred probabilities are over 0.5,
+example, to get the residues whose Parapred probabilities are over 0.6,
 
 ```bash
-$ jq -c '.[] | .[] | select(.[1] >= 0.5)' output.json
-# output using CSQSYNYPYTF
-# ["Y",0.53621]
-# ["N",0.83283]
-# ["Y",0.78089]
-# ["P",0.93526]
-# ["Y",0.71154]
-# ["T",0.81395]
+$ jq -c '.[] | .[] | select(.[1] >= 0.6)' output.json
+# output using AKVSYLSTASSLDYWG
+["V",0.70882]
+["S",0.6835]
+["Y",0.93412]
+["L",0.98127]
+["S",0.95116]
+["T",0.89977]
+["A",0.77837]
+["S",0.83716]
 ``` 
  
 
 ### Docker
 The Docker equivalent is
 ```bash
-docker run -v /tmp:/data parapred_pytorch:latest predict CAKYPYYYGTSHWYFDVW -v -o /data/output_ranibizumab.json
+docker run -v /tmp:/data parapred_pytorch:latest predict AKVSYLSTASSLDYWG -v -o /data/output_adalimumab.json
 ```
 * The first `-v` flag _before_ the Docker image tag (`parapred_pytorch:latest`) mounts your `/tmp` folder to the `/data`
 folder of the Docker container
@@ -107,7 +118,7 @@ from parapred.cnn import generate_mask
 from parapred.preprocessing import encode_batch
 
 # prepare your input
-sequences = (["CAKYPYYYGTSHWYFDVW", "CSQSYNYPYTF"])
+sequences = (["AKVSYLSTASSLDYWG", "YCQRYNRAPYTFG"])
 
 # encoded is a tensor of (batch_size x features x max_length). so is mask.
 encoded, lengths = encode_batch(sequences, max_length = 40)
@@ -134,9 +145,9 @@ mapped = [list(zip(sequences[i], pr)) for i, pr in enumerate(probs)]
 ## Additional notes
 
 ### How Parapred works
-We strongly encourage you to read the paper by [Liberis
-et al., 2018.](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995) as it contains details on
-the training and testing that led up to this work. In short, 
+We encourage you to read the paper by [Liberis
+et al., 2018](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995) as it contains details on
+the training and testing that led up to the neural network architecture and parameters. In short, 
 * Parapred first featurises sequences in to a `(B x F x L)` tensor, where `F = 28, L = 40`
 * Parapred then applies a masked 1D convolution; the output is still `(B x F x L)`, but a mask is applied to
 "zero out" positions that should really be pads.
@@ -151,25 +162,26 @@ Parapred-pytorch (this repo) is written to help researchers rapidly predict para
 is a more minimalist implementation that focusses more on providing inference capabilities. We provide here the
 pre-trained weights from the original Parapred Github repo, which were translated to fit the PyTorch framework.
 
-The original Parapred method was based on the Chothia-defined CDRs based on the Chothia numbering. We provide
-a table mapping the CDR Chothia boundaries in the corresponding IMGT numbers. Note that these are **not**
-identical to the IMGT boundaries of the CDRs; e.g. CDRH3 according to the IMGT definition is IMGT H105-H117.
+### Numbering
+The original Parapred method was based on the Chothia-defined CDRs based on the Chothia numbering. We provide a table
+mapping the CDR Chothia boundaries in the corresponding IMGT numbers. Note that these are **not** identical to the IMGT
+boundaries of the CDRs; e.g. CDRH3 according to the IMGT definition is IMGT H105-H117.
 
-| CDR | Chothia numbers | IMGT numbers | 
-| --- | --------------- | ------------ |
-| H1  |  H26-H34        | H27-H37 |
-| H2  |  H52-H56        | H57-H64 |
-| H3  |  H95-H102       | H107-H117 |
-| L1  |  L24-L34        | L24-40 |
-| L2  |  L50-L56        | L56-L69 |
-| L3  |  L89-L97 | L105-L117|
+| CDR | Chothia numbers | IMGT numbers | Parapred input (IMGT) | 
+| --- | --------------- | ------------ | --------------- |
+| H1  |  H26-H34        | H27-H37 | H25-H39 | 
+| H2  |  H52-H56        | H57-H64 | H55-H66 |
+| H3  |  H95-H102       | H107-H117 | H105-H119 |
+| L1  |  L24-L34        | L24-40 | L22-L42 |
+| L2  |  L50-L56        | L56-L69 | L54-L71 |
+| L3  |  L89-L97 | L105-L117| L103-L119 |
 
 ### LSTM activations
 Our implementation provides users the ability to test Parapred using `sigmoid` activations for the
 LSTM layer:
 
 ```bash
-$ python cli.py predict CAKYPYYYGTSHWYFDVW -s -v
+$ python cli.py predict AKVSYLSTASSLDYWG -s -v
 ``` 
 
 The original Parapred method was based on Tensorflow 1.2/Keras, which had used `hard_sigmoid`

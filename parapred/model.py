@@ -73,17 +73,17 @@ class Parapred(nn.Module):
         self.fc = nn.Linear(n_hidden_cells*2, 1)
         self.sigmoid = nn.Sigmoid()
 
-    def forward(self, x, mask: torch.BoolTensor, lengths: torch.LongTensor):
+    def forward(self, input_tensor: torch.Tensor, mask: torch.BoolTensor, lengths: torch.LongTensor) -> torch.Tensor:
         """
         Forward pass of Parapred given the input, mask, and sequence lengths
 
-        :param x: an input tensor of (bsz x features x seqlen)
+        :param input_tensor: an input tensor of (bsz x features x seqlen)
         :param mask: a boolean tensor of (bsz x 1 x seqlen)
         :param lengths: a LongTensor of (seqlen); must be equal to bsz
         :return:
         """
         # residual connection following ELU
-        o = x + self.elu(self.mconv(x, mask))
+        o = input_tensor + self.elu(self.mconv(input_tensor, mask))
 
         # Packing sequences to remove padding
         packed_seq = pack_padded_sequence(o.permute(0, 2, 1), lengths, batch_first=True, enforce_sorted=False)
@@ -98,7 +98,7 @@ class Parapred(nn.Module):
         return o
 
 
-def clean_output(output_tensor: torch.Tensor, sequence_length: int):
+def clean_output(output_tensor: torch.Tensor, sequence_length: int) -> torch.Tensor:
     """
     Clean the output tensor of probabilities to remove the predictions for padded positions
 

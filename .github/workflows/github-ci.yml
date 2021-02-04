@@ -22,5 +22,5 @@ jobs:
           pip install -r requirements.txt
           make install
 
-      - name: Unit test Parapred
+      - name: Integration tests for Parapred
         run: python -m unittest parapred/tests/test_parapred.py

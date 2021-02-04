@@ -1,7 +1,7 @@
 import unittest
 import torch
 import os
-from parapred.model import Parapred
+from parapred.model import Parapred, clean_output
 from parapred.preprocessing import encode_parapred, encode_batch
 from parapred.cnn import generate_mask
 
@@ -20,13 +20,16 @@ class ParapredTest(unittest.TestCase):
         self.num_features = 28
 
     def test_probailities(self):
-        encoding, lengths = encode_batch(["YCQRYNRAPYTFG"], self.max_length)
+        """
+        Integration test for probability prediction
+        """
+        encoding, lengths = encode_batch([self.sequence], self.max_length)
         m = generate_mask(encoding, lengths)
 
         with torch.no_grad():
             pr = self.model(encoding, m, lengths)
 
-        v = pr.view(1, -1)[0][:lengths[0].item()]
+        v = clean_output(pr[0], lengths[0].item())
 
         self.assertTrue(
             torch.allclose(
@@ -38,7 +41,7 @@ class ParapredTest(unittest.TestCase):
 
     def test_encoding(self):
         """
-        Test the encoding function
+        Unit test the encoding function
         """
         # Deliberately not testing padding
         encoded_representation = encode_parapred(self.sequence, len(self.sequence))
@@ -101,6 +104,9 @@ class ParapredTest(unittest.TestCase):
         )
 
     def test_batch_prediction(self):
+        """
+        Integration testing for a batch of sequences
+        """
         batch = ["SRWGGDGFYAMDYWG", "YCQRYNRAPYTFG"]
         encoding, lengths = encode_batch(batch, self.max_length)
         m = generate_mask(encoding, lengths)
@@ -108,8 +114,8 @@ class ParapredTest(unittest.TestCase):
         with torch.no_grad():
             pr = self.model(encoding, m, lengths)
 
-        v1 = pr.view(len(batch), -1)[0][:lengths[0].item()]
-        v2 = pr.view(len(batch), -1)[1][:lengths[1].item()]
+        v1 = clean_output(pr[0], lengths[0].item())
+        v2 = clean_output(pr[1], lengths[1].item())
 
         self.assertTrue(
             torch.allclose(

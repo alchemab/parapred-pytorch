@@ -6,14 +6,16 @@
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&labelColor=blue)](https://www.linkedin.com/company/alchemab-therapeutics-ltd/)
 [![Alchemab](https://img.shields.io/twitter/follow/alchemabtx?style=social)](https://twitter.com/alchemabtx)
 
+![Banner](banner.png)
 
-This repo is a PyTorch implementation of the original Parapred code from [Liberis
-et al., 2018](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995). 
+This repo contains a PyTorch implementation of the original Parapred code from [Liberis
+et al., 2018](https://academic.oup.com/bioinformatics/article/34/17/2944/4972995). Alchemab are providing users a faster,
+more modular tool to predict paratope probabilities for CDR sequences. We also provide instructions on how to integrate
+`parapred` into existing Python code. 
 
 We would also like to point users to the [original Github repo for Parapred](https://github.com/eliberis/parapred),
 based on [Keras](https://keras.io/).
 
-![Banner](banner.png)
 
 ## Table of Contents
 * [Setup](#setup)

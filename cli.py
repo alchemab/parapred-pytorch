@@ -102,7 +102,6 @@ def predict(cdr: str,
 @click.option("--threshold", "-t", help = "Specify paratope probability threshold. Defualt: 0.67", default = 0.67)
 def paratype(cdrs: Tuple[str, str],
             weight: Optional[str] = None,
-            output: str = "output.json",
             sigmoid: bool = False,
             threshold: float = 0.67):
 
@@ -177,8 +176,11 @@ def paratype(cdrs: Tuple[str, str],
         else:
             aln += " "
 
-    paratype_score = matches / max(min(paratope_a_total, paratope_b_total), 1)
-    print(f"{cdr_a}\n{aln}\n{cdr_b}\nParatype Score={paratype_score:.3f}")
+    if min(paratope_a_total, paratope_b_total) == 0:
+        print(f"{cdr_a}\n{aln}\n{cdr_b}\nParatype Score=0.00")
+    else:
+        paratype_score = matches / min(paratope_a_total, paratope_b_total)
+        print(f"{cdr_a}\n{aln}\n{cdr_b}\nParatype Score={paratype_score:.3f}")
 
 
 @click.group()

@@ -110,9 +110,31 @@ folder of the Docker container
 container. Thus, even if we write `/data/` here in the Terminal, it's the `/data/` folder of the Docker container,
 which is actually `/tmp` of your machine (if you've mounted as we suggest above)
 
-### Output format  
+### Paratyping
+We also include the capability for Paratyping, as described in [Richardson et al. 2021](https://www.tandfonline.com/doi/full/10.1080/19420862.2020.1869406).
+Briefly, sequence positions whose paratope probabilities are greater than 0.67 are aligned, and identity is calculated
+over those positions. Users can specify paratope probability thresholds using the `-t` option.
 
-### As part of a larger Python codebase
+```bash
+$ python cli.py paratype AKVSYLSTASSLDYWG AKVSYLSTWSSLDYWG
+```
+
+This will generate the following alignment:
+```bash
+AKVSYLSTASSLDYWG
+  ::::::x:      
+AKVSYLSTWSSLDYWG
+Paratype Score=0.875
+```
+
+To interpret the alignment,
+* `:` corresponds to a match for two paratope positions  
+* `x` corresponds to a mismatch for two paratope positions
+* `'` corresponds to a position that is a paratope in the first sequence but not in the second
+* `.` corresponds to a position that is a paratope in the second sequence but not in the first  
+* Gaps correspond to positions that were not predicted to be a paratope in either sequence
+
+### Integration into a larger Python codebase
 ```python
 import torch
 from parapred.model import Parapred, clean_output
@@ -167,7 +189,8 @@ pre-trained weights from the original Parapred Github repo, which were translate
 ### Numbering
 The original Parapred method was based on the Chothia-defined CDRs based on the Chothia numbering. We provide a table
 mapping the CDR Chothia boundaries in the corresponding IMGT numbers. Note that these are **not** identical to the IMGT
-boundaries of the CDRs; e.g. CDRH3 according to the IMGT definition is IMGT H105-H117.
+boundaries of the CDRs; e.g. CDRH3 according to the IMGT definition is IMGT H105-H117. To number sequences and convert
+between CDR definitions, we recommend using [ANARCI](https://github.com/oxpig/ANARCI).
 
 | CDR | Chothia numbers | IMGT numbers | Parapred input (IMGT) | 
 | --- | --------------- | ------------ | --------------- |

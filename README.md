@@ -98,7 +98,7 @@ $ jq -c '.[] | .[] | select(.[1] >= 0.6)' output.json
 ``` 
  
 
-### Docker
+### Running via Docker
 The Docker equivalent is
 ```bash
 docker run -v /tmp:/data parapred_pytorch:latest predict AKVSYLSTASSLDYWG -v -o /data/output_adalimumab.json
@@ -144,6 +144,11 @@ from parapred.preprocessing import encode_batch
 # prepare your input
 sequences = (["AKVSYLSTASSLDYWG", "YCQRYNRAPYTFG"])
 
+# PyTorch's pack padded sequence function requires length sorting from longest to shortest
+sorted_cdr_strings = [cdr for cdr in sorted(sequences, key = lambda z: len(z), reverse=True)]
+sorted_cdr_lookup = dict(enumerate(sorted_cdr_strings))
+lookup_cdr = dict([(v,i) for i, v in enumerate(sorted_cdr_strings)])
+
 # encoded is a tensor of (batch_size x features x max_length). so is mask.
 encoded, lengths = encode_batch(sequences, max_length = 40)
 mask = generate_mask(encoded, lengths)
@@ -161,8 +166,11 @@ with torch.no_grad():
 # padded positions, which we should ignore.
 probs = [clean_output(pr, lengths[i]).tolist() for i, pr in enumerate(probs)]
  
-# map back to original sequence
-mapped = [list(zip(sequences[i], pr)) for i, pr in enumerate(probs)]
+# map back to CDR sequence; remember that we submitted length-sorted strings
+mapped = [list(zip(sorted_cdr_strings[i], pr)) for i, pr in enumerate(probs)]
+
+# we need to re-order `mapped` back to the original (unsorted) ordering 
+mapped = [mapped[lookup_cdr[s]] for s in sequences]
 ```
 
 

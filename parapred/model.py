@@ -86,7 +86,7 @@ class Parapred(nn.Module):
         o = input_tensor + self.elu(self.mconv(input_tensor, mask))
 
         # Packing sequences to remove padding
-        packed_seq = pack_padded_sequence(o.permute(0, 2, 1), lengths, batch_first=True, enforce_sorted=False)
+        packed_seq = pack_padded_sequence(o.permute(0, 2, 1), lengths, batch_first=True, enforce_sorted=True)
         o_packed, (h, c) = self.lstm(packed_seq)
 
         # Re-pad sequences before prediction of probabilities

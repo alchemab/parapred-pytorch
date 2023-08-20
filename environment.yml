@@ -4,6 +4,6 @@ channels:
     - pytorch
     - anaconda
 dependencies:
-    - python=3.8
-    - pytorch==1.7.0
+    - python=3.10
+    - pytorch=2.0.1
     - click==7.1.2

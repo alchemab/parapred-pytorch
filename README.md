@@ -150,7 +150,7 @@ sorted_cdr_lookup = dict(enumerate(sorted_cdr_strings))
 lookup_cdr = dict([(v,i) for i, v in enumerate(sorted_cdr_strings)])
 
 # encoded is a tensor of (batch_size x features x max_length). so is mask.
-encoded, lengths = encode_batch(sequences, max_length = 40)
+encoded, lengths = encode_batch(sorted_cdr_strings, max_length = 40)
 mask = generate_mask(encoded, lengths)
 
 # initialise the model and load pretrained weights

@@ -1,8 +1,8 @@
 # Parapred - PyTorch
 
 [![MIT License](https://img.shields.io/static/v1?label=license&message=MIT&color=green&style=flat-square)](https://opensource.org/licenses/MIT)
-![Python 3.8](https://img.shields.io/static/v1?label=python&message=3.8&color=blue&style=flat-square)
-[![pytorch](https://img.shields.io/static/v1?label=pytorch&message=1.7.0&color=blue&style=flat-square)](https://pytorch.org/)
+![Python 3.10](https://img.shields.io/static/v1?label=python&message=3.10&color=blue&style=flat-square)
+[![pytorch](https://img.shields.io/static/v1?label=pytorch&message=2.0.1&color=blue&style=flat-square)](https://pytorch.org/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&labelColor=blue)](https://www.linkedin.com/company/alchemab-therapeutics-ltd/)
 [![Alchemab](https://img.shields.io/twitter/follow/alchemabtx?style=social)](https://twitter.com/alchemabtx)
 
